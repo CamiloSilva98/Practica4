@@ -8,7 +8,8 @@
 // Valor que uso para indicar que un destino no es alcanzable
 const int INF = INT_MAX;
 
-class Router {
+class Router
+{
 private:
     std::string nombre;
     std::map<std::string, int> vecinos; // vecino directo - costo del enlace

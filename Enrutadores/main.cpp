@@ -1,36 +1,44 @@
 #include <iostream>
-#include "Router.h"
+#include "red.h"
 
 using namespace std;
 
 int main()
 {
-    // Enrutador A de la Figura 1: B con costo 4, C con 10 y D con 5
-    Router A("A");
-    A.agregarVecino("B", 4);
-    A.agregarVecino("C", 10);
-    A.agregarVecino("D", 5);
+    Red red;
 
-    A.inicializarTabla();
-    A.imprimirTabla();
+    // Red de la Figura 1 de la guia
+    red.agregarRouter("A");
+    red.agregarRouter("B");
+    red.agregarRouter("C");
+    red.agregarRouter("D");
+    red.agregarRouter("E");
 
-    // Simulo que la red le informa un mejor camino hacia C
-    A.setCosto("C", 7);
-    cout << endl << "Despues de actualizar el costo a C:" << endl;
-    A.imprimirTabla();
+    red.agregarEnlace("A", "B", 4);
+    red.agregarEnlace("A", "C", 10);
+    red.agregarEnlace("A", "D", 5);
+    red.agregarEnlace("B", "C", 3);
+    red.agregarEnlace("B", "D", 1);
+    red.agregarEnlace("C", "D", 2);
+    red.agregarEnlace("B", "E", 5);
 
-    cout << endl << "Costo a D: " << A.getCosto("D") << endl;
-    cout << "Es vecino de C: " << A.esVecino("C") << endl;
+    red.imprimirRed();
+    cout << endl;
+    red.imprimirTablas();
 
-    // Elimino un vecino y compruebo que ya no aparece
-    A.eliminarVecino("C");
-    cout << "Es vecino de C tras eliminarlo: " << A.esVecino("C") << endl;
+    // Casos que deben fallar
+    cout << "Enlace A-A: " << red.agregarEnlace("A", "A", 3) << endl;
+    cout << "Enlace A-Z: " << red.agregarEnlace("A", "Z", 3) << endl;
+    cout << "Router A repetido: " << red.agregarRouter("A") << endl;
+    cout << endl;
 
-    // Destino que no existe en la tabla
-    if (A.getCosto("Z") == INF)
-    {
-        cout << "Z no es alcanzable" << endl;
-    }
+    // Cambios de topologia en ejecucion
+    red.eliminarEnlace("A", "C");
+    red.eliminarRouter("D");
+    cout << "Despues de quitar el enlace A-C y el router D:" << endl;
+    red.imprimirRed();
+    cout << endl;
+    red.imprimirTablas();
 
     return 0;
 }
