@@ -1,4 +1,4 @@
-#include "Router.h"
+#include "router.h"
 #include <iostream>
 
 using namespace std;
@@ -62,11 +62,12 @@ const map<string, int>& Router::getTabla() const
     return tabla;
 }
 
-void Router::imprimirTabla() const {
+void Router::imprimirTabla() const
+{
     cout << "Tabla del enrutador " << nombre << ":" << endl;
     for (const auto& par : tabla)
     {
-        cout << "  " << par.first << " : ";
+        cout << par.first << " : ";
         if (par.second == INF)
         {
             cout << "INF";
