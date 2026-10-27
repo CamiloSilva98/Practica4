@@ -1,5 +1,9 @@
 #include "red.h"
 #include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -17,7 +21,7 @@ bool Red::agregarRouter(const string& nombre)
         return false;
     }
     routers.emplace(nombre, Router(nombre));
-    inicializarTablas();
+    actualizarTablas();
     return true;
 }
 
@@ -34,7 +38,7 @@ bool Red::eliminarRouter(const string& nombre)
     {
         par.second.eliminarVecino(nombre);
     }
-    inicializarTablas();
+    actualizarTablas();
     return true;
 }
 
@@ -52,7 +56,7 @@ bool Red::agregarEnlace(const string& a, const string& b, int costo)
     // El enlace es bidireccional, se registra en ambos enrutadores
     routers.at(a).agregarVecino(b, costo);
     routers.at(b).agregarVecino(a, costo);
-    inicializarTablas();
+    actualizarTablas();
     return true;
 }
 
@@ -69,7 +73,7 @@ bool Red::eliminarEnlace(const string& a, const string& b)
 
     routers.at(a).eliminarVecino(b);
     routers.at(b).eliminarVecino(a);
-    inicializarTablas();
+    actualizarTablas();
     return true;
 }
 
@@ -102,6 +106,80 @@ void Red::inicializarTablas()
                 r.setCosto(otro.first, INF);
             }
         }
+    }
+}
+
+void Red::calcularDesde(const string& origen)
+{
+    map<string, int> dist;
+    map<string, string> previo;
+
+    for (const auto& par : routers)
+    {
+        dist[par.first] = INF;
+    }
+    dist[origen] = 0;
+
+    // Cola de prioridad: siempre sale el nodo con menor distancia
+    priority_queue<pair<int, string>, vector<pair<int, string>>, greater<pair<int, string>>> cola;
+    cola.push({0, origen});
+
+    while (!cola.empty())
+    {
+        pair<int, string> actual = cola.top();
+        cola.pop();
+        int d = actual.first;
+        string u = actual.second;
+
+        // Entrada vieja de la cola, ya se encontro un camino mejor
+        if (d > dist[u])
+        {
+            continue;
+        }
+
+        for (const auto& v : routers.at(u).getVecinos())
+        {
+            int nuevo = d + v.second;
+            if (nuevo < dist[v.first])
+            {
+                dist[v.first] = nuevo;
+                previo[v.first] = u;
+                cola.push({nuevo, v.first});
+            }
+        }
+    }
+
+    Router& r = routers.at(origen);
+    r.inicializarTabla();
+
+    for (const auto& par : dist)
+    {
+        r.setCosto(par.first, par.second);
+        if (par.second == INF)
+        {
+            continue; // destino inalcanzable, no hay camino
+        }
+
+        // Se reconstruye el camino yendo hacia atras desde el destino
+        vector<string> camino;
+        string nodo = par.first;
+        while (nodo != origen)
+        {
+            camino.push_back(nodo);
+            nodo = previo[nodo];
+        }
+        camino.push_back(origen);
+        reverse(camino.begin(), camino.end());
+
+        r.setCamino(par.first, camino);
+    }
+}
+
+void Red::actualizarTablas()
+{
+    for (const auto& par : routers)
+    {
+        calcularDesde(par.first);
     }
 }
 
