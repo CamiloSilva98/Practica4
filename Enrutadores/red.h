@@ -3,12 +3,14 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include "Router.h"
 
 class Red
 {
 private:
     std::map<std::string, Router> routers; // nombre -> enrutador
+    void calcularDesde(const std::string& origen);
 
 public:
     Red();
@@ -24,6 +26,7 @@ public:
     int cantidadRouters() const;
 
     void inicializarTablas();
+    void actualizarTablas();
 
     void imprimirRed() const;
     void imprimirTablas() const;

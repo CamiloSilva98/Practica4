@@ -35,6 +35,7 @@ void Router::inicializarTabla()
 {
     // Al encenderse solo conoce a si mismo y a sus vecinos directos
     tabla.clear();
+    caminos.clear();
     tabla[nombre] = 0;
     for (const auto& par : vecinos)
     {
@@ -78,4 +79,20 @@ void Router::imprimirTabla() const
         }
         cout << endl;
     }
+}
+
+void Router::setCamino(const string& destino, const vector<string>& camino)
+{
+    caminos[destino] = camino;
+}
+
+vector<string> Router::getCamino(const string& destino) const
+{
+    // Si no hay camino guardado se devuelve un vector vacio
+    auto it = caminos.find(destino);
+    if (it == caminos.end())
+    {
+        return vector<string>();
+    }
+    return it->second;
 }
