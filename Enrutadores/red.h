@@ -3,7 +3,6 @@
 
 #include <string>
 #include <map>
-#include <vector>
 #include "Router.h"
 
 class Red
@@ -27,6 +26,11 @@ public:
 
     void inicializarTablas();
     void actualizarTablas();
+
+    bool cargarDesdeArchivo(const std::string& ruta);
+    bool guardarEnArchivo(const std::string& ruta) const;
+
+    int consultarCamino(const std::string& origen, const std::string& destino, std::vector<std::string>& camino) const;
 
     void imprimirRed() const;
     void imprimirTablas() const;
