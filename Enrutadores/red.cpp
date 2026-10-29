@@ -3,6 +3,8 @@
 #include <queue>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 
 using namespace std;
@@ -208,4 +210,90 @@ void Red::imprimirTablas() const
         par.second.imprimirTabla();
         cout << endl;
     }
+}
+
+bool Red::cargarDesdeArchivo(const string& ruta)
+{
+    ifstream archivo(ruta);
+    if (!archivo.is_open())
+    {
+        return false;
+    }
+
+    // Se descarta la red actual antes de cargar la nueva
+    routers.clear();
+
+    string linea;
+    while (getline(archivo, linea))
+    {
+        istringstream ss(linea);
+        string tipo;
+        ss >> tipo;
+
+        if (tipo == "R")
+        {
+            string nombre;
+            ss >> nombre;
+            agregarRouter(nombre);
+        }
+        else if (tipo == "E")
+        {
+            string a, b;
+            int costo = 0;
+            ss >> a >> b >> costo;
+            agregarEnlace(a, b, costo);
+        }
+    }
+
+    archivo.close();
+    return true;
+}
+
+bool Red::guardarEnArchivo(const string& ruta) const
+{
+    ofstream archivo(ruta);
+    if (!archivo.is_open())
+    {
+        return false;
+    }
+
+    for (const auto& par : routers)
+    {
+        archivo << "R " << par.first << endl;
+    }
+
+    // Cada enlace es bidireccional, se escribe una sola vez (a < b)
+    for (const auto& par : routers)
+    {
+        for (const auto& v : par.second.getVecinos())
+        {
+            if (par.first < v.first)
+            {
+                archivo << "E " << par.first << " " << v.first << " " << v.second << endl;
+            }
+        }
+    }
+
+    archivo.close();
+    return true;
+}
+
+int Red::consultarCamino(const string& origen, const string& destino, vector<string>& camino) const
+{
+    camino.clear();
+    if (!existeRouter(origen) || !existeRouter(destino))
+    {
+        return INF;
+    }
+
+    // El camino y el costo ya los dejo calculados Dijkstra en la tabla del origen
+    const Router& r = routers.at(origen);
+    int costo = r.getCosto(destino);
+    if (costo == INF)
+    {
+        return INF;
+    }
+
+    camino = r.getCamino(destino);
+    return costo;
 }

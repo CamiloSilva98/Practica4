@@ -1,44 +1,31 @@
+#include "programa.h"
 #include <iostream>
-#include "red.h"
-
-using namespace std;
 
 int main()
 {
     Red red;
+    int opcion;
 
-    // Red de la Figura 1 de la guia
-    red.agregarRouter("A");
-    red.agregarRouter("B");
-    red.agregarRouter("C");
-    red.agregarRouter("D");
-    red.agregarRouter("E");
+    do
+    {
+        mostrarMenu();
+        opcion = leerEntero("Opcion: ");
 
-    red.agregarEnlace("A", "B", 4);
-    red.agregarEnlace("A", "C", 10);
-    red.agregarEnlace("A", "D", 5);
-    red.agregarEnlace("B", "C", 3);
-    red.agregarEnlace("B", "D", 1);
-    red.agregarEnlace("C", "D", 2);
-    red.agregarEnlace("B", "E", 5);
-
-    red.imprimirRed();
-    cout << endl;
-    red.imprimirTablas();
-
-    // Casos que deben fallar
-    cout << "Enlace A-A: " << red.agregarEnlace("A", "A", 3) << endl;
-    cout << "Enlace A-Z: " << red.agregarEnlace("A", "Z", 3) << endl;
-    cout << "Router A repetido: " << red.agregarRouter("A") << endl;
-    cout << endl;
-
-    // Cambios de topologia en ejecucion
-    red.eliminarEnlace("A", "C");
-    red.eliminarRouter("D");
-    cout << "Despues de quitar el enlace A-C y el router D:" << endl;
-    red.imprimirRed();
-    cout << endl;
-    red.imprimirTablas();
+        switch (opcion)
+        {
+        case 1: opcionAgregarRouter(red); break;
+        case 2: opcionEliminarRouter(red); break;
+        case 3: opcionAgregarEnlace(red); break;
+        case 4: opcionEliminarEnlace(red); break;
+        case 5: opcionConsultarCamino(red); break;
+        case 6: red.imprimirRed(); break;
+        case 7: red.imprimirTablas(); break;
+        case 8: opcionCargarArchivo(red); break;
+        case 9: opcionGuardarArchivo(red); break;
+        case 0: std::cout << "Programa terminado" << std::endl; break;
+        default: std::cout << "Opcion invalida" << std::endl;
+        }
+    }while (opcion != 0);
 
     return 0;
 }
